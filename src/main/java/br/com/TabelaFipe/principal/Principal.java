@@ -6,6 +6,10 @@ public class Principal {
 
     private Scanner leitura = new Scanner(System.in);
 
+    //https://parallelum.com.br/fipe/api/v1/carros/marcas
+
+    private final String ENDERECO = "https://parallelum.com.br/fipe/api/v1/";
+
 
     public void exibeMenu() {
 
