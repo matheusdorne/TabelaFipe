@@ -1,6 +1,7 @@
 package br.com.TabelaFipe.principal;
 
 import br.com.TabelaFipe.model.Dados;
+import br.com.TabelaFipe.model.Modelos;
 import br.com.TabelaFipe.service.ConsumoAPI;
 import br.com.TabelaFipe.service.ConverteDados;
 
@@ -71,12 +72,16 @@ public class Principal {
 
         System.out.println(marcaBuscada);
 
-        json = consumo.obterDados(enderecoTemp + "/" + marcaBuscada.get().codigo().toString() + "/modelos" );
-        System.out.println(json);
-        dados =  conversor.obterLista(json, Dados.class);
+        enderecoTemp +=  "/" + marcaBuscada.get().codigo().toString() + "/modelos";
 
-        dados.stream()
-                .sorted(Comparator.comparing(Dados::nome))
+        json = consumo.obterDados(enderecoTemp);
+        System.out.println(json);
+
+        var modeloLista =  conversor.obterDados(json, Modelos.class);
+
+        System.out.println("\nModelos dessa marca: \n");
+        modeloLista.modelos().stream()
+                .sorted(Comparator.comparing(Dados::codigo))
                 .forEach(m -> System.out.println(m.codigo() + " - " + m.nome()));
 
 
