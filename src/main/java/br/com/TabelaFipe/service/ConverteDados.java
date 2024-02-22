@@ -26,6 +26,8 @@ public class ConverteDados implements  IConverteDados{
         CollectionType lista = mapper.getTypeFactory()
                 .constructCollectionType(List.class,classe);
 
+        //Cria uma coleção capaz de receber o genêricos
+
         try {
             return  mapper.readValue(json,lista);
         } catch (JsonProcessingException e) {

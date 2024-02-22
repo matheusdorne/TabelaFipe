@@ -4,9 +4,7 @@ import br.com.TabelaFipe.model.Dados;
 import br.com.TabelaFipe.service.ConsumoAPI;
 import br.com.TabelaFipe.service.ConverteDados;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 
 public class Principal {
 
@@ -30,7 +28,7 @@ public class Principal {
                 1 - MOTO  
                 2 - CARRO  
                 3 - CAMINHÃO   
-                
+                                
                 Escolha uma opção: """;
 
         System.out.println(menu);
@@ -55,13 +53,32 @@ public class Principal {
         var json = consumo.obterDados(enderecoTemp);
         System.out.println(json);
 
-       var dados = conversor.obterLista(json, Dados.class);
+        var dados = conversor.obterLista(json, Dados.class);
 
-        System.out.println(dados);
-//
-        List<Dados> marcas = new ArrayList<>();
+        dados.stream()
+                .sorted(Comparator.comparing(Dados::nome))
+                .forEach(m -> System.out.println(m.codigo() + " - " + m.nome()));
 
-//        marcas.forEach(System.out::println);
+        System.out.println("\nDigite a marca para pesquisa: ");
+        var marcaPesquisa = leitura.next();
+
+        Optional<Dados> marcaBuscada = dados.stream()
+                .filter(d -> d.nome()
+                        .toUpperCase()
+                        .contains(marcaPesquisa.toUpperCase()))
+                .findFirst();
+        // Optinal que recebe a pesquisa do trecho digitado, filtrando objetos pelo nome
+
+        System.out.println(marcaBuscada);
+
+        json = consumo.obterDados(enderecoTemp + "/" + marcaBuscada.get().codigo().toString() + "/modelos" );
+        System.out.println(json);
+        dados =  conversor.obterLista(json, Dados.class);
+
+        dados.stream()
+                .sorted(Comparator.comparing(Dados::nome))
+                .forEach(m -> System.out.println(m.codigo() + " - " + m.nome()));
+
 
 
 
