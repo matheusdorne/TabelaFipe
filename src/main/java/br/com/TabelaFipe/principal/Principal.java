@@ -5,6 +5,7 @@ import br.com.TabelaFipe.model.Modelos;
 import br.com.TabelaFipe.service.ConsumoAPI;
 import br.com.TabelaFipe.service.ConverteDados;
 
+import javax.swing.*;
 import java.util.*;
 
 public class Principal {
@@ -52,7 +53,7 @@ public class Principal {
         }
 
         var json = consumo.obterDados(enderecoTemp);
-        System.out.println(json);
+
 
         var dados = conversor.obterLista(json, Dados.class);
 
@@ -70,21 +71,45 @@ public class Principal {
                 .findFirst();
         // Optinal que recebe a pesquisa do trecho digitado, filtrando objetos pelo nome
 
-        System.out.println(marcaBuscada);
 
-        enderecoTemp +=  "/" + marcaBuscada.get().codigo().toString() + "/modelos";
+        enderecoTemp += "/" + marcaBuscada.get().codigo() + "/modelos";
 
         json = consumo.obterDados(enderecoTemp);
-        System.out.println(json);
 
-        var modeloLista =  conversor.obterDados(json, Modelos.class);
+
+        var modeloLista = conversor.obterDados(json, Modelos.class);
 
         System.out.println("\nModelos dessa marca: \n");
         modeloLista.modelos().stream()
                 .sorted(Comparator.comparing(Dados::codigo))
                 .forEach(m -> System.out.println(m.codigo() + " - " + m.nome()));
 
+        System.out.println("\nDigite o código do modelo para pesquisa: \n");
+        var codigoModelo = leitura.next();
 
+        Optional<Dados> modeloBusca = modeloLista.modelos()
+                .stream()
+                .filter(d -> d.codigo().contains(codigoModelo))
+                .findFirst();
+
+
+        enderecoTemp += "/" + modeloBusca.get().codigo() + "/anos";
+
+        json = consumo.obterDados(enderecoTemp);
+
+        var anoLista = conversor.obterLista(json, Dados.class);
+
+        anoLista.stream()
+                .sorted(Comparator.comparing(Dados::codigo))
+                .forEach(d -> System.out.println(d.codigo() + " - " + d.nome()));
+
+        System.out.println("Digite o código do ano: ");
+        var anoModelo = leitura.next();
+
+        Optional<Dados> anoBuscado = anoLista.stream()
+                .filter(d -> d.codigo().contains(anoModelo))
+                .findFirst();
+        System.out.println(anoBuscado);
 
 
     }
