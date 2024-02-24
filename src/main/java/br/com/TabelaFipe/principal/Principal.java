@@ -2,10 +2,12 @@ package br.com.TabelaFipe.principal;
 
 import br.com.TabelaFipe.model.Dados;
 import br.com.TabelaFipe.model.Modelos;
+import br.com.TabelaFipe.model.Veiculo;
 import br.com.TabelaFipe.service.ConsumoAPI;
 import br.com.TabelaFipe.service.ConverteDados;
 
 import javax.swing.*;
+import java.sql.SQLOutput;
 import java.util.*;
 
 public class Principal {
@@ -31,22 +33,22 @@ public class Principal {
                 2 - CARRO  
                 3 - CAMINHÃO   
                                 
-                Escolha uma opção: """;
+                Escolha uma opção: \n""";
 
         System.out.println(menu);
         var escolha = leitura.nextInt();
         switch (escolha) {
             case 1 -> {
-                System.out.println("MOTO");
+                System.out.println("\nMOTO");
                 enderecoTemp = ENDERECO + "motos/marcas";
             }
             case 2 -> {
-                System.out.println("CARRO");
+                System.out.println("\nCARRO");
 
                 enderecoTemp = ENDERECO + "carros/marcas";
             }
             case 3 -> {
-                System.out.println("CAMINHÃO");
+                System.out.println("\nCAMINHÃO");
                 enderecoTemp = ENDERECO + "caminhoes/marcas";
             }
             default -> System.out.println("Opção inválida");
@@ -56,7 +58,7 @@ public class Principal {
 
 
         var dados = conversor.obterLista(json, Dados.class);
-
+        System.out.println("\nMarcas: \n");
         dados.stream()
                 .sorted(Comparator.comparing(Dados::nome))
                 .forEach(m -> System.out.println(m.codigo() + " - " + m.nome()));
@@ -96,20 +98,37 @@ public class Principal {
         enderecoTemp += "/" + modeloBusca.get().codigo() + "/anos";
 
         json = consumo.obterDados(enderecoTemp);
+        List<Dados> anos = conversor.obterLista(json, Dados.class);
 
-        var anoLista = conversor.obterLista(json, Dados.class);
+        List<Veiculo> veiculos = new ArrayList<>();
 
-        anoLista.stream()
-                .sorted(Comparator.comparing(Dados::codigo))
-                .forEach(d -> System.out.println(d.codigo() + " - " + d.nome()));
+        for (int i = 0; i < anos.size() ; i++) {
+            var enderecoAnos = enderecoTemp + "/" + anos.get(i).codigo();
+            json = consumo.obterDados(enderecoAnos);
+            Veiculo veiculo = conversor.obterDados(json, Veiculo.class);
+            veiculos.add(veiculo);
 
-        System.out.println("Digite o código do ano: ");
-        var anoModelo = leitura.next();
+        }
 
-        Optional<Dados> anoBuscado = anoLista.stream()
-                .filter(d -> d.codigo().contains(anoModelo))
-                .findFirst();
-        System.out.println(anoBuscado);
+        System.out.println("Todos os veículos: \n");
+
+        veiculos.stream()
+                .sorted(Comparator.comparing(Veiculo::anoModelo))
+                .forEach(v -> System.out.println(v.valor() + " - " + v.marca() + " - " + v.modelo() + " - " + v.anoModelo() + " - " + v.combustivel() ));
+//
+
+//
+//
+//        System.out.println("\nDados do Veiculo" +
+//                "\nValor: " + veiculo.Valor() +
+//                "\nMarca: " + veiculo.Marca() +
+//                "\nModelo: " + veiculo.Modelo() +
+//                "\nAno Modelo: " + veiculo.AnoModelo().toString() +
+//                "\nCombustível: " + veiculo.Combustivel() +
+//                "\nCódigo Fipe: " + veiculo.CodigoFipe() +
+//                "\nMês Referência: " + veiculo.MesReferencia() +
+//                "\nSigla Combustível: " + veiculo.SiglaCombustivel()
+//        );
 
 
     }
